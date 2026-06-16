@@ -1,31 +1,17 @@
-import os
-import sys
-
-# 1. FORCE INSTALLATION ENGINE (Imports se pehle chalega)
-try:
-    import plotly
-    import streamlit as st
-except ImportError:
-    # Agar libraries nahi milti, toh ye pehle automatic backend me install karega
-    os.system(f'"{sys.executable}" -m pip install plotly pandas streamlit')
-    # Installation ke baad system ko reload karne ke liye taaki Python ise pehchan sake
-    os.execv(sys.executable, ['python'] + sys.argv)
-
-# 2. AB MAIN IMPORTS CHALENGE (Jab installation pakka ho chuki hai)
 import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-# 3. DASHBOARD THEME & LAYOUT DESIGN
+# 1. Dashboard Theme aur Layout Design
 st.set_page_config(page_title="Sakshi | Job Analytics", layout="wide")
 
 st.title("📊 Data Analyst Job Market Insights Dashboard")
 st.markdown("This interactive platform extracts real-time technology trends from corporate job postings.")
 
-# Data Load Karna
+# 2. Processed Data Load Karna
 df = pd.read_csv("processed_jobs.csv")
 
-# KPI Metrics Cards Section
+# 3. Premium KPI Metrics Cards Section
 st.subheader("🎯 Key Market Performance Indicators")
 col1, col2, col3 = st.columns(3)
 
@@ -46,7 +32,7 @@ with col3:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Filter System inside the Dashboard
+# 4. Filter System inside the Dashboard
 st.sidebar.header("🔍 Filter Analytics Panel")
 selected_location = st.sidebar.selectbox(
     "Choose Target City Hub:", 
@@ -58,9 +44,10 @@ if selected_location != "All Locations":
 else:
     filtered_df = df
 
-# Visual Interactive Analytics Chart Section
+# 5. Visual Interactive Analytics Chart Section
 st.subheader(f"📈 Technology Skill Frequency Matrix ({selected_location})")
 
+# Dynamically formatting skill data for chart layout
 skills_counts = {
     "SQL": filtered_df['SQL'].sum(),
     "Python": filtered_df['Python'].sum(),
@@ -72,6 +59,7 @@ skills_counts = {
 chart_data = pd.DataFrame(list(skills_counts.items()), columns=['Technical Tool', 'Job Requirement Count'])
 chart_data = chart_data.sort_values(by='Job Requirement Count', ascending=False)
 
+# Creating a high-quality interactive bar graph
 fig = px.bar(chart_data, x='Technical Tool', y='Job Requirement Count', 
              color='Job Requirement Count', 
              color_continuous_scale='Turbo',
@@ -89,7 +77,7 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("---")
 
-# Corporate Data Preview Control Panel
+# 6. Corporate Data Preview Control Panel
 st.subheader("📋 Active Corporate Openings Registry")
 st.dataframe(
     filtered_df[['Job Title', 'Company Name', 'Location', 'Salary Estimate']].head(10), 
